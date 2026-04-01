@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopee Women's Fashion · 选品清单</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           🎨 CSS变量 — 想改颜色只需改这里
+        ========================================= */
+        :root {
+            --brand:       #c0505a;   /* 主品牌色：玫瑰红 */
+            --brand-light: #fdf0f1;   /* 品牌浅色背景 */
+            --brand-dark:  #922e38;   /* 品牌深色（hover用） */
+            --accent:      #f5a623;   /* 强调色：暖金 */
+            --bg:          #faf9f7;   /* 整体背景 */
+            --surface:     #ffffff;   /* 卡片背景 */
+            --border:      #ebebeb;   /* 边框线 */
+            --text-main:   #1a1a1a;   /* 主文字 */
+            --text-sub:    #888888;   /* 次要文字 */
+            --radius:      12px;
+            --shadow:      0 2px 12px rgba(0,0,0,0.07);
+            --shadow-hover: 0 8px 28px rgba(192,80,90,0.15);
+        }
+
+        /* =========================================
+           🏠 基础布局
+        ========================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', 'PingFang SC', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1320px; margin: 0 auto; padding: 0 24px 60px; }
+
+        /* =========================================
+           🔴 顶部标题栏 Header
+           👉 可以改：标题文字、副标题说明、颜色
+        ========================================= */
+        header {
+            background: linear-gradient(135deg, #c0505a 0%, #8b2d45 100%);
+            padding: 36px 40px;
+            margin-bottom: 28px;
+            border-radius: 0 0 24px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 装饰圆 */
+        header::before {
+            content: '';
+            position: absolute;
+            width: 320px; height: 320px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+            top: -100px; right: -80px;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            width: 180px; height: 180px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            bottom: -60px; left: 40px;
+        }
+
+        .header-inner { position: relative; z-index: 1; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+
+        .header-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+        /* 👉 可改：左侧大标题文字 */
+        .header-logo span { color: #ffd4d8; }
+
+        .header-meta { margin-left: auto; display: flex; gap: 24px; }
+        .header-stat { text-align: center; color: rgba(255,255,255,0.9); }
+        .header-stat .num { font-size: 26px; font-weight: 700; color: #fff; }
+        .header-stat .lbl { font-size: 11px; opacity: 0.75; margin-top: 2px; letter-spacing: 0.5px; }
+
+        .header-desc {
+            width: 100%;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(4px);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.92);
+            line-height: 1.8;
+            margin-top: 4px;
+        }
+        /* 👉 可改：顶部说明文字，改成你想说的内容 */
+
+        /* =========================================
+           🔍 筛选区域 Filter Section
+           👉 可以：增减筛选项、改placeholder文字
+        ========================================= */
+        .filter-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-row + .filter-row { margin-top: 10px; }
+
+        /* 搜索框 */
+        .search-wrap { position: relative; flex: 0 0 260px; }
+        .search-wrap svg {
+            position: absolute;
+            left: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            pointer-events: none;
+        }
+        .search-wrap input { padding-left: 38px !important; width: 100%; }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            height: 38px;
+            padding: 0 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg);
+            color: var(--text-main);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(192,80,90,0.1);
+            background: white;
+        }
+
+        /* Site 标签式筛选 */
+        /* 👉 可增减站点：在HTML里加或删 .site-btn 按钮 */
+        .site-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .chip-label { font-size: 12px; font-weight: 700; color: var(--text-sub); margin-right: 4px; white-space: nowrap; }
+
+        .site-btn {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+            color: var(--text-sub);
+            letter-spacing: 0.3px;
+        }
+        .site-btn:hover { border-color: var(--brand); color: var(--brand); }
+        .site-btn.active { background: var(--brand); border-color: var(--brand); color: white; }
+        .site-btn[data-site="ALL"] { border-style: dashed; }
+
+        /* 普通select包装（自定义箭头） */
+        .select-wrap { position: relative; }
+        .select-wrap::after {
+            content: '▾';
+            position: absolute;
+            right: 10px; top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+        .select-wrap select { padding-right: 28px; cursor: pointer; }
+
+        /* 价格区间 */
+        .price-range { display: flex; align-items: center; gap: 6px; }
+        .price-range input { width: 90px; }
+        .price-range span { color: var(--text-sub); font-size: 13px; }
+
+        /* 统计 & 排序行 */
+        .filter-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+        .result-count { font-size: 13px; color: var(--text-sub); }
+        .result-count strong { color: var(--brand); font-size: 16px; }
+
+        /* 重置按钮 */
+        .btn-reset {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-sub);
+            transition: all 0.18s;
+        }
+        .btn-reset:hover { border-color: var(--brand); color: var(--brand); }
+
+        /* =========================================
+           🃏 商品卡片 Product Cards
+        ========================================= */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+            /* 👉 可改：minmax(255px, 1fr) 中的255px控制每列最小宽度 */
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.22s, box-shadow 0.22s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(192,80,90,0.2);
+        }
+
+        /* ── 图片区 ── */
+        .img-container {
+            width: 100%;
+            height: 210px;
+            /* 👉 可改：210px 改变图片展示高度 */
+            background: #f7f7f7;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-in;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+        .card:hover .img-container img { transform: scale(1.05); }
+
+        /* ── 标签覆盖层 ── */
+        .tag-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff7a18, #e52e71);
+            color: white;
+            z-index: 5;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(229,46,113,0.3);
+        }
+        /* 👉 tag标签的颜色在这里改 */
+
+        /* Site 小标 */
+        .site-badge {
+            position: absolute;
+            top: 10px; left: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            background: rgba(0,0,0,0.55);
+            color: white;
+            z-index: 5;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* ── 卡片信息区 ── */
+        .info {
+            padding: 14px 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* 商品标题 */
+        /* 👉 可改：-webkit-line-clamp 控制显示几行，2=两行 */
+        .item-title {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.45;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 价格区间 */
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        .price-min {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--brand);
+        }
+        /* 👉 价格颜色改 var(--brand) 即主色 */
+        .price-sep { font-size: 13px; color: var(--text-sub); }
+        .price-max {
+            font-size: 15px;
+            font-weight: 600;
+            color: #c0505a99;
+        }
+
+        /* 分类 pills */
+        .cat-row { display: flex; gap: 6px; flex-wrap: wrap; }
+        .cat-pill {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--brand-light);
+            color: var(--brand-dark);
+            font-weight: 600;
+        }
+
+        /* 底部信息行 */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-sub);
+            background: #fafafa;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* 卖家类型 & 官方店标签 */
+        .seller-tag {
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+        .seller-cncb { background: #e8f4ff; color: #1565c0; }
+        .seller-local { background: #f0fdf4; color: #166534; }
+        .official-yes { background: #fff8e1; color: #b45309; }
+        .official-no  { background: #f5f5f5; color: #9e9e9e; }
+        /* 👉 这四种标签的颜色在这里改 */
+
+        .item-id {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 10px;
+            color: #aaa;
+        }
+
+        .btn-view {
+            color: var(--brand);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 12px;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+        .btn-view:hover { color: var(--brand-dark); text-decoration: underline; }
+
+        /* =========================================
+           📄 分页
+        ========================================= */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 36px;
+        }
+        .page-btn {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.18s;
+        }
+        .page-btn:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+        .page-btn:disabled { opacity: 0.4; cursor: default; }
+        .page-info { font-size: 13px; color: var(--text-sub); padding: 0 8px; }
+        .page-jump { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-sub); }
+        .page-jump input { width: 56px; text-align: center; }
+
+        /* =========================================
+           🖼️ 图片放大Modal
+        ========================================= */
+        #imageModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+            backdrop-filter: blur(4px);
+        }
+        #imageModal.open { display: flex; }
+        #modalImg {
+            max-width: 88vw;
+            max-height: 88vh;
+            border-radius: 8px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+        }
+
+        /* =========================================
+           📭 空状态
+        ========================================= */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-sub);
+            grid-column: 1 / -1;
+        }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p { font-size: 15px; margin-top: 6px; }
+
+        /* =========================================
+           📱 响应式
+        ========================================= */
+        @media (max-width: 768px) {
+            .container { padding: 0 12px 40px; }
+            header { padding: 24px 20px; }
+            .header-logo { font-size: 22px; }
+            .header-meta { display: none; }
+            .filter-panel { padding: 16px; }
+            .search-wrap { flex: 0 0 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ============================================
+         🔴 顶部标题栏
+         👉 可改：h1标题、副标题span、desc-box里的说明文字
+    ============================================= -->
+    <header>
+        <div class="header-inner">
+            <div>
+                <div class="header-logo">
+                    👗 Women's Fashion <span>· 选品清单</span>
+                    <!-- 👉 改这里的文字修改网站大标题 -->
+                </div>
+                <div style="color:rgba(255,255,255,0.7); font-size:13px; margin-top:4px;">
+                    Shopee Cross-Border &amp; Local · Fashion Category
+                    <!-- 👉 改这里的副标题文字 -->
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="header-stat">
+                    <div class="num" id="totalCount">–</div>
+                    <div class="lbl">TOTAL ITEMS</div>
+                </div>
+                <div class="header-stat">
+                    <div class="num" id="siteCount">–</div>
+                    <div class="lbl">SITES</div>
+                </div>
+            </div>
+            <div class="header-desc">
+                <!-- 👉 改这里的说明文字（公告栏内容） -->
+                ✨ 每周更新精选女装选品，已按站点、卖家类型整理分类 &nbsp;|&nbsp;
+                🔍 支持按站点 / 类目 / 官方店多维筛选 &nbsp;|&nbsp;
+                🛍️ 点击商品卡片右下角"View"直达原品链接
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================
+         🔍 筛选区域
+         👉 增加站点：复制一个 <button class="site-btn"> 改名
+         👉 增加筛选：复制一个 select-wrap 块，改id和选项
+    ============================================= -->
+    <div class="filter-panel">
+        <div class="filter-title">🔎 筛选 &amp; 搜索</div>
+
+        <!-- 第一行：搜索 + 类目 + 卖家类型 + 官方店 + 排序 -->
+        <div class="filter-row">
+            <div class="search-wrap">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="搜索商品名 / Item ID…" oninput="debouncedFilter()">
+                <!-- 👉 改 placeholder 文字即可 -->
+            </div>
+
+            <!-- 一级类目 -->
+            <div class="select-wrap">
+                <select id="l1Filter" onchange="updateL2(); applyFilters()">
+                    <option value="">L1 类目 (全部)</option>
+                    <!-- 👉 选项由JS从数据自动生成 -->
+                </select>
+            </div>
+
+            <!-- 二级类目 -->
+            <div class="select-wrap">
+                <select id="l2Filter" onchange="applyFilters()">
+                    <option value="">L2 类目 (全部)</option>
+                </select>
+            </div>
+
+            <!-- 卖家类型 👉 增减选项直接改这里的 <option> -->
+            <div class="select-wrap">
+                <select id="sellerTypeFilter" onchange="applyFilters()">
+                    <option value="">Seller Type (全部)</option>
+                    <option value="CNCB">CNCB</option>
+                    <option value="Local">Local</option>
+                </select>
+            </div>
+
+            <!-- 官方店 👉 增减选项直接改这里的 <option> -->
+            <div class="select-wrap">
+                <select id="officialFilter" onchange="applyFilters()">
+                    <option value="">Official Shop (全部)</option>
+                    <option value="Y">✅ Official (Y)</option>
+                    <option value="N">➖ Non-Official (N)</option>
+                </select>
+            </div>
+
+            <!-- 排序 -->
+            <div class="select-wrap" style="margin-left:auto;">
+                <select id="sortOrder" onchange="applyFilters()">
+                    <option value="default">默认排序</option>
+                    <option value="priceAsc">价格 低→高</option>
+                    <option value="priceDesc">价格 高→低</option>
+                    <option value="dateDesc">日期 最新</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 第二行：站点筛选 chips + 价格区间 -->
+        <div class="filter-row" style="margin-top:12px;">
+            <div class="site-chips">
+                <span class="chip-label">📍 Site:</span>
+                <!-- 👉 增加站点：复制下面一行，改 data-site 和显示文字 -->
+                <button class="site-btn active" data-site="ALL"    onclick="setSite('ALL')">All</button>
+                <button class="site-btn"         data-site="BR"     onclick="setSite('BR')">🇧🇷 BR</button>
+                <button class="site-btn"         data-site="MX"     onclick="setSite('MX')">🇲🇽 MX</button>
+                <button class="site-btn"         data-site="MY"     onclick="setSite('MY')">🇲🇾 MY</button>
+                <button class="site-btn"         data-site="PH"     onclick="setSite('PH')">🇵🇭 PH</button>
+                <button class="site-btn"         data-site="SG"     onclick="setSite('SG')">🇸🇬 SG</button>
+                <button class="site-btn"         data-site="TH"     onclick="setSite('TH')">🇹🇭 TH</button>
+                <button class="site-btn"         data-site="TW"     onclick="setSite('TW')">🇹🇼 TW</button>
+                <button class="site-btn"         data-site="VN"     onclick="setSite('VN')">🇻🇳 VN</button>
+            </div>
+
+            <!-- 价格区间 -->
+            <div class="price-range" style="margin-left:auto;">
+                <span style="font-size:12px; color:var(--text-sub); font-weight:600;">Price:</span>
+                <input type="number" id="minPrice" placeholder="Min" oninput="debouncedFilter()" min="0">
+                <span>–</span>
+                <input type="number" id="maxPrice" placeholder="Max" oninput="debouncedFilter()" min="0">
+            </div>
+        </div>
+
+        <!-- 第三行：统计 + Tag筛选 + 重置 -->
+        <div class="filter-bottom">
+            <div class="result-count">
+                已筛选：<strong id="countDisplay">0</strong> 件商品
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <!-- Tag筛选 -->
+                <div class="select-wrap">
+                    <select id="tagFilter" onchange="applyFilters()">
+                        <option value="">Tag (全部)</option>
+                    </select>
+                </div>
+                <button class="btn-reset" onclick="resetFilters()">↺ 重置筛选</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         🃏 商品卡片区（由JS自动生成，无需手动修改）
+    ============================================= -->
+    <div class="product-grid" id="productGrid">
+        <!-- 卡片由JS渲染 -->
+    </div>
+
+    <!-- 分页 -->
+    <div class="pagination" id="pagination"></div>
+
+</div><!-- /container -->
+
+
+<!-- 图片放大 Modal -->
+<div id="imageModal" onclick="this.classList.remove('open')">
+    <img id="modalImg" src="" alt="preview">
+</div>
+
+
+<!-- =============================================
+     🧠 JavaScript 逻辑区
+     🗂️ data.csv 列顺序：
+       [0]title  [1]price_min  [2]price_max
+       [3]imgUrl [4]link       [5]L1
+       [6]L2     [7]update_date[8]itemid
+       [9]tag   [10]site      [11]seller_type
+       [12]is_official_shop
+============================================= -->
+<script>
+    /* ── 防止查看源码（保留原有功能） ── */
+    document.onkeydown = (e) => {
+        if (e.keyCode === 123 ||
+            (e.ctrlKey && e.shiftKey && e.keyCode === 73) ||
+            (e.ctrlKey && e.keyCode === 85)) return false;
+    };
+
+    /* ── 核心变量 ── */
+    let products    = [];   // 全部原始数据
+    let filteredData = [];  // 筛选后的数据
+    let currentPage = 1;
+    let activeSite  = 'ALL'; // 当前选中站点
+
+    const PAGE_SIZE = 40;
+    // 👉 可改：每页显示数量，改这里的数字即可
+
+    /* ── 数据清洗工具 ── */
+    const clean = (str) =>
+        str ? str.toString().replace(/^['+]+/, '').replace(/["=\t]/g, '').trim() : "";
+
+    /* ── 把CSV一行数组映射成对象（字段在这里对应） ── */
+    // 👉 如果将来要增加CSV列，在这里加新字段映射
+    const mapData = (arr) => ({
+        title:          clean(arr[0])  || "—",
+        priceMin:       parseFloat(arr[1]) || 0,
+        priceMax:       parseFloat(arr[2]) || 0,
+        imgUrl:         clean(arr[3])  || "",
+        link:           clean(arr[4])  || "#",
+        l1:             clean(arr[5])  || "",
+        l2:             clean(arr[6])  || "",
+        updateDate:     clean(arr[7])  || "",
+        itemId:         clean(arr[8])  || "",
+        tag:            clean(arr[9])  || "",
+        site:           clean(arr[10]) || "",
+        sellerType:     clean(arr[11]) || "",
+        isOfficialShop: clean(arr[12]) || "",
+    });
+
+    /* ── 读取 data.csv 并启动 ── */
+    async function loadData() {
+        try {
+            const res  = await fetch('data.csv');
+            const text = await res.text();
+
+            // 解析CSV（支持带引号的字段）
+            products = text.split(/\r?\n/).slice(1).map((line, idx) => {
+                let r = [], cur = '', q = false;
+                for (let c of line) {
+                    if (c === '"') { q = !q; }
+                    else if (c === ',' && !q) { r.push(cur.trim()); cur = ''; }
+                    else cur += c;
+                }
+                r.push(cur.trim());
+                r.push(idx); // 保留原始行号
+                return r;
+            }).filter(a => {
+                // 👉 过滤条件：title 或 itemId 不为空才算有效数据
+                const title  = a[0]  ? a[0].replace(/["']/g,'').trim()  : "";
+                const itemId = a[8]  ? a[8].replace(/["']/g,'').trim()  : "";
+                return title !== "" || itemId !== "";
+            });
+
+            // 更新顶部统计数字
+            document.getElementById('totalCount').textContent = products.length;
+            const sites = [...new Set(products.map(p => clean(p[10])).filter(Boolean))];
+            document.getElementById('siteCount').textContent = sites.length;
+
+            initFilters();
+            applyFilters();
+
+        } catch(e) {
+            console.error('❌ 读取 data.csv 失败：', e);
+            document.getElementById('productGrid').innerHTML =
+                `<div class="empty-state">
+                    <div class="icon">📂</div>
+                    <strong>无法加载数据</strong>
+                    <p>请确认 data.csv 文件已放在同一目录下，且格式正确。</p>
+                 </div>`;
+        }
+    }
+
+    /* ── 渲染商品卡片 ── */
+    function render(dataList, page = 1) {
+        currentPage = page;
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = '';
+
+        const slice = dataList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+        if (slice.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">🔍</div>
+                    <strong>没有符合条件的商品</strong>
+                    <p>试试放宽筛选条件？</p>
+                </div>`;
+            renderPagination(0);
+            return;
+        }
+
+        slice.forEach(arr => {
+            const item = mapData(arr);
+
+            // 价格显示：有区间则显示区间，否则只显示最低价
+            const priceHTML = item.priceMax && item.priceMax > item.priceMin
+                ? `<span class="price-min">$${item.priceMin.toFixed(2)}</span>
+                   <span class="price-sep">–</span>
+                   <span class="price-max">$${item.priceMax.toFixed(2)}</span>`
+                : `<span class="price-min">$${item.priceMin.toFixed(2)}</span>`;
+            // 👉 价格符号改这里（$改成¥或其他）
+
+            // 卖家类型样式
+            const sellerClass = item.sellerType.toLowerCase() === 'local' ? 'seller-local' : 'seller-cncb';
+
+            // 官方店样式
+            const officialClass = item.isOfficialShop === 'Y' ? 'official-yes' : 'official-no';
+            const officialLabel = item.isOfficialShop === 'Y' ? '⭐ Official' : 'Non-Official';
+
+            // 安全转义（防止含引号的标题破坏HTML）
+            const safeTitle  = item.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+            const safeImgUrl = item.imgUrl.replace(/'/g, "&#39;");
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                ${item.site ? `<div class="site-badge">${item.site}</div>` : ''}
+                ${item.tag  ? `<div class="tag-badge">${item.tag}</div>` : ''}
+
+                <div class="img-container"
+                     onclick="document.getElementById('modalImg').src='${safeImgUrl}';
+                              document.getElementById('imageModal').classList.add('open');">
+                    <img src="${item.imgUrl}" loading="lazy" alt="${safeTitle}">
+                </div>
+
+                <div class="info">
+                    <div class="item-title" title="${safeTitle}">${item.title}</div>
+
+                    <div class="price-row">${priceHTML}</div>
+
+                    <div class="cat-row">
+                        ${item.l1 ? `<span class="cat-pill">${item.l1}</span>` : ''}
+                        ${item.l2 ? `<span class="cat-pill" style="opacity:0.75;">${item.l2}</span>` : ''}
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span class="seller-tag ${sellerClass}">${item.sellerType || '—'}</span>
+                    <span class="seller-tag ${officialClass}">${officialLabel}</span>
+                    <span class="item-id">#${item.itemId}</span>
+                    <span style="flex:1"></span>
+                    <span style="font-size:10px; color:#bbb;">${item.updateDate}</span>
+                    <a href="${item.link}" target="_blank" class="btn-view">View →</a>
+                </div>`;
+
+            grid.appendChild(card);
+        });
+
+        renderPagination(dataList.length);
+    }
+
+    /* ── 渲染分页 ── */
+    function renderPagination(total) {
+        const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
+        document.getElementById('pagination').innerHTML = `
+            <button class="page-btn" onclick="changePage(-1)" ${currentPage===1?'disabled':''}>← 上一页</button>
+            <span class="page-info">${currentPage} / ${totalPages}</span>
+            <button class="page-btn" onclick="changePage(1)" ${currentPage>=totalPages?'disabled':''}>下一页 →</button>
+            <div class="page-jump">
+                <span>跳至</span>
+                <input type="number" id="jumpPage" min="1" max="${totalPages}" placeholder="${currentPage}">
+                <button class="page-btn" onclick="jumpToPage()">GO</button>
+            </div>`;
+    }
+
+    function changePage(delta) { render(filteredData, currentPage + delta); window.scrollTo(0,0); }
+    function jumpToPage() {
+        const p = parseInt(document.getElementById('jumpPage')?.value);
+        const max = Math.ceil(filteredData.length / PAGE_SIZE);
+        if (p >= 1 && p <= max) { render(filteredData, p); window.scrollTo(0,0); }
+    }
+
+    /* ── Site 标签切换 ── */
+    function setSite(site) {
+        activeSite = site;
+        document.querySelectorAll('.site-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.site === site);
+        });
+        applyFilters();
+    }
+
+    /* ── 核心筛选逻辑 ── */
+    // 👉 如果要增加新筛选，在这里加对应的 filter 判断
+    function applyFilters() {
+        const q          = document.getElementById('searchInput').value.toLowerCase();
+        const l1         = document.getElementById('l1Filter').value;
+        const l2         = document.getElementById('l2Filter').value;
+        const sellerType = document.getElementById('sellerTypeFilter').value;
+        const official   = document.getElementById('officialFilter').value;
+        const tag        = document.getElementById('tagFilter').value;
+        const minP       = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxP       = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+        const sort       = document.getElementById('sortOrder').value;
+
+        filteredData = products.filter(arr => {
+            const i = mapData(arr);
+
+            const matchSearch     = !q || i.title.toLowerCase().includes(q) || i.itemId.toLowerCase().includes(q);
+            const matchSite       = activeSite === 'ALL' || i.site === activeSite;
+            const matchL1         = !l1 || i.l1 === l1;
+            const matchL2         = !l2 || i.l2 === l2;
+            const matchSeller     = !sellerType || i.sellerType === sellerType;
+            const matchOfficial   = !official   || i.isOfficialShop === official;
+            const matchTag        = !tag        || i.tag === tag;
+            const matchPrice      = i.priceMin >= minP && i.priceMin <= maxP;
+
+            return matchSearch && matchSite && matchL1 && matchL2 &&
+                   matchSeller && matchOfficial && matchTag && matchPrice;
+        });
+
+        // 排序
+        if (sort === 'priceAsc')  filteredData.sort((a,b) => (parseFloat(a[1])||0) - (parseFloat(b[1])||0));
+        if (sort === 'priceDesc') filteredData.sort((a,b) => (parseFloat(b[1])||0) - (parseFloat(a[1])||0));
+        if (sort === 'dateDesc')  filteredData.sort((a,b) => (b[7]||'').localeCompare(a[7]||''));
+
+        document.getElementById('countDisplay').textContent = filteredData.length;
+        render(filteredData, 1);
+    }
+
+    /* ── 初始化下拉筛选选项（从数据自动读取） ── */
+    function initFilters() {
+        // L1 类目
+        [...new Set(products.map(p => clean(p[5])).filter(Boolean))].forEach(v => {
+            document.getElementById('l1Filter').innerHTML += `<option value="${v}">${v}</option>`;
+        });
+        // Tag
+        [...new Set(products.map(p => clean(p[9])).filter(Boolean))].forEach(v => {
+            document.getElementById('tagFilter').innerHTML += `<option value="${v}">${v}</option>`;
+        });
+    }
+
+    /* ── L2 联动更新 ── */
+    function updateL2() {
+        const l1 = document.getElementById('l1Filter').value;
+        const s  = document.getElementById('l2Filter');
+        s.innerHTML = '<option value="">L2 类目 (全部)</option>';
+        [...new Set(products.filter(p => !l1 || clean(p[5]) === l1).map(p => clean(p[6])).filter(Boolean))]
+            .forEach(v => { s.innerHTML += `<option value="${v}">${v}</option>`; });
+    }
+
+    /* ── 重置所有筛选 ── */
+    function resetFilters() {
+        document.getElementById('searchInput').value   = '';
+        document.getElementById('l1Filter').value      = '';
+        document.getElementById('l2Filter').value      = '';
+        document.getElementById('sellerTypeFilter').value = '';
+        document.getElementById('officialFilter').value   = '';
+        document.getElementById('tagFilter').value     = '';
+        document.getElementById('minPrice').value      = '';
+        document.getElementById('maxPrice').value      = '';
+        document.getElementById('sortOrder').value     = 'default';
+        setSite('ALL');
+    }
+
+    /* ── 防抖（避免输入时频繁触发） ── */
+    let debounceTimer;
+    const debouncedFilter = () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(applyFilters, 280);
+    };
+
+    /* ── 启动 ── */
+    window.onload = loadData;
+</script>
+
+</body>
+</html>
